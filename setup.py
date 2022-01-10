@@ -2,6 +2,8 @@
 from pathlib import Path
 from setuptools import setup, find_packages
 
+from telegram2rss import __version__, __author__, __license__
+
 HERE = Path(__file__).parent
 
 README = (HERE / "readme.md").read_text()
@@ -11,16 +13,14 @@ ISSUES = "https://github.com/ZER0-X/python-telegram2rss/issues"
 CHANGELOG = "https://github.com/ZER0-X/python-telegram2rss/blob/main/CHANGELOG.md"
 
 
-VERSION = '0.1.0'
-
 DESCRIPTION = "A python library to fetch data from public Telegram channels to use them as a python object or RSS feed."
 
 
 setup(
     name="telegram2rss",
-    version=VERSION,
-    author="zer0-x",
-    license="GPL-3.0",
+    version=__version__,
+    author=__author__,
+    license=__license__,
     url=URL,
     project_urls={
         "Issues": ISSUES,
