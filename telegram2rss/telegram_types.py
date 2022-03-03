@@ -16,9 +16,12 @@ PHOTO = MessageType("image", ".tgme_widget_message_photo_wrap", "📷")
 VIDEO = MessageType("video", ".tgme_widget_message_video_player", "📹")
 VOICE = MessageType("voice", ".tgme_widget_message_voice_player", "🎤")
 DOCUMENT = MessageType("document", ".tgme_widget_message_document_wrap", "📎")
-LOCATION = MessageType("location", ".tgme_widget_message_location", "📍")
+LOCATION = MessageType("location", ".tgme_widget_message_location_wrap", "📍")
 POLL = MessageType("poll", ".tgme_widget_message_poll", "📊")
-STICKER = MessageType("sticker", ".tgme_widget_message_sticker", "🖼️️")
+# STICKER = MessageType("sticker", ".tgme_widget_message_sticker", "🖼️️")
+UNSUPPORTED_MEDIA = MessageType(
+    "not_supported_media", ".message_media_not_supported", "❔"
+)
 
 
 class MetaType:
@@ -60,4 +63,8 @@ POLL_OPTION_PERCENT = MetaType(
 POLL_OPTION_VALUE = MetaType(
     "poll_option_value",
     ".tgme_widget_message_poll_option_value .tgme_widget_message_poll_option_text",
+)
+
+UNSUPPORTED_MEDIA_URL = MetaType(
+    "unsupported_media_url", ".message_media_view_in_telegram"
 )

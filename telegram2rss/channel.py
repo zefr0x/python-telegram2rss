@@ -1,5 +1,6 @@
 """Telegram channel class."""
 from typing import Optional
+from urllib.parse import urlparse, parse_qs
 
 from bs4 import BeautifulSoup
 from requests import session as requests_session, sessions as requests_sessions
@@ -12,7 +13,8 @@ from telegram_types import (
     DOCUMENT,
     LOCATION,
     POLL,
-    STICKER,
+    # STICKER,
+    UNSUPPORTED_MEDIA,
     CHANNEL_TITLE,
     CHANNEL_DESCRIPTION,
     CHANNEL_IMAGE,
@@ -31,6 +33,7 @@ from telegram_types import (
     POLL_OPTIONS,
     POLL_OPTION_PERCENT,
     POLL_OPTION_VALUE,
+    UNSUPPORTED_MEDIA_URL,
 )
 
 
@@ -120,6 +123,7 @@ class TGChannel:
             author = bubble.select_one(MESSAGE_AUTHOR.selector).text
             date = bubble.select_one(MESSAGE_DATE.selector)["datetime"]
             views = bubble.select_one(MESSAGE_VIEWS.selector).text
+            # TODO Detect if message is forwarded or some thing like that.
             message.update(
                 {
                     MESSAGE_NUMBER.name: number,
@@ -139,6 +143,7 @@ class TGChannel:
             # Get photos urls.
             photos = bubble.select(PHOTO.selector)
             for photo in photos:
+                # TODO proxy photons and sava them as base64.
                 photo = photo["style"].split("'")[1]
                 contents.append({"type": PHOTO.name, "url": photo})
 
@@ -146,6 +151,7 @@ class TGChannel:
             videos = bubble.select(VIDEO.selector)
             for video in videos:
                 video_url = video["href"]
+                # TODO proxy video thumbnail and sava it as base64.
                 video_thumb_url = video.select(VIDEO_THUMB.selector)["style"].split(
                     "'"
                 )[1]
@@ -187,8 +193,24 @@ class TGChannel:
             # Get locations.
             locations = bubble.select(LOCATION.selector)
             for location in locations:
-                # CONT
-                pass
+                url = location.select("tgme_widget_message_location_wrap")["href"]
+                # Convert URL from google maps to openstreet map and get longuitude and latitude.
+                query = parse_qs(urlparse(url).query)
+                q = query["q"][0]
+                zoom = query["z"][0]
+                latitude, longitude = tuple(q.split(","))
+                url = (
+                    "https://www.openstreetmap.org/"
+                    + f"?lat={latitude}&lon={longitude}&zoom={zoom}&layers=M"
+                )
+                contents.append(
+                    {
+                        "type": LOCATION.name,
+                        "url": url,
+                        "latitude": latitude,
+                        "longitude": longitude,
+                    }
+                )
 
             # Get polls.
             polls = bubble.select(POLL.selector)
@@ -216,10 +238,19 @@ class TGChannel:
                 )
 
             # Get stickers
-            stickers = bubble.select(STICKER.selector)
-            for sticker in stickers:
-                # CONT
-                pass
+            # stickers = bubble.select(STICKER.selector)
+            # for sticker in stickers:
+            #     # Can't be implemented since we cant access them via the web interface.
+            #     pass
+
+            unsupported_medias = bubble.select(UNSUPPORTED_MEDIA.selector)
+            for media in unsupported_medias:
+                contents.append(
+                    {
+                        "type": UNSUPPORTED_MEDIA.name,
+                        "url": media.select(UNSUPPORTED_MEDIA_URL.selector)["href"],
+                    }
+                )
 
             message.update({"contents": contents})
             all_messages.append(message)
