@@ -18,7 +18,8 @@ VOICE = MessageType("voice", ".tgme_widget_message_voice_player", "🎤")
 DOCUMENT = MessageType("document", ".tgme_widget_message_document_wrap", "📎")
 LOCATION = MessageType("location", ".tgme_widget_message_location_wrap", "📍")
 POLL = MessageType("poll", ".tgme_widget_message_poll", "📊")
-# STICKER = MessageType("sticker", ".tgme_widget_message_sticker", "🖼️️")
+STICKER = MessageType("sticker", ".tgme_widget_message_sticker_wrap .tgme_widget_message_sticker", "🖼️️")
+STICKER_PACKS = MessageType("sticker_packs", "", "📦")
 UNSUPPORTED_MEDIA = MessageType(
     "not_supported_media", ".message_media_not_supported", "❔"
 )

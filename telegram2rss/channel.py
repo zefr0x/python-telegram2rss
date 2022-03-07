@@ -13,7 +13,8 @@ from .telegram_types import (
     DOCUMENT,
     LOCATION,
     POLL,
-    # STICKER,
+    STICKER,
+    # STICKER_PACKS,
     UNSUPPORTED_MEDIA,
     CHANNEL_TITLE,
     CHANNEL_DESCRIPTION,
@@ -190,8 +191,8 @@ class TGChannel:
             documents = bubble.select(DOCUMENT.selector)
             for document in documents:
                 document_url = document["href"]
-                document_title = document.select(DOCUMENT_TITLE.selector)
-                document_size = document.select(DOCUMENT_SIZE.selector)
+                document_title = document.select_one(DOCUMENT_TITLE.selector).text
+                document_size = document.select_one(DOCUMENT_SIZE.selector).text
                 contents.append(
                     {
                         "type": DOCUMENT.name,
@@ -233,7 +234,9 @@ class TGChannel:
 
                 options = poll.select(POLL_OPTIONS.selector)
                 for option in options:
-                    option_percent = option.select_one(POLL_OPTION_PERCENT.selector).text
+                    option_percent = option.select_one(
+                        POLL_OPTION_PERCENT.selector
+                    ).text
                     option_value = option.select_one(POLL_OPTION_VALUE.selector).text
                     poll_options.append(
                         {"percent": option_percent, "value": option_value}
@@ -249,6 +252,20 @@ class TGChannel:
                 )
 
             # Get stickers
+            stickers = bubble.select(STICKER.selector)
+            for sticker in stickers:
+                sticker_shape = sticker["style"].split("'")[1]  # base64 svg image
+                # TODO proxy image
+                sticker_image = sticker["data-webp"]
+                contents.append(
+                    {
+                        "type": STICKER.name,
+                        "sticker_shape": sticker_shape,
+                        "sticker_image": sticker_image,
+                    }
+                )
+
+            # Get stickers packs
             # stickers = bubble.select(STICKER.selector)
             # for sticker in stickers:
             #     # Can't be implemented since we cant access them via the web interface.
