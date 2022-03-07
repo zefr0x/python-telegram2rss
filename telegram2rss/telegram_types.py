@@ -40,6 +40,7 @@ CHANNEL_IMAGE = MetaType("channel_description", ".tgme_page_photo_image img")
 MESSAGE_AUTHOR = MetaType("author", ".tgme_widget_message_author")
 MESSAGE_DATE = MetaType("date", ".tgme_widget_message_date time")
 MESSAGE_VIEWS = MetaType("views", ".tgme_widget_message_views")
+MESSAGE_VOTERS = MetaType("votes", ".tgme_widget_message_voters")
 MESSAGE_NUMBER = MetaType("url", ".tgme_widget_message_date")
 
 VIDEO_DURATION = MetaType("video_duration", ".tgme_widget_message_video_player time")
@@ -56,7 +57,7 @@ DOCUMENT_SIZE = MetaType("document_size", ".tgme_widget_message_document_extra")
 
 POLL_QUESTION = MetaType("poll_question", ".tgme_widget_message_poll_question")
 POLL_TYPE = MetaType("poll_type", ".tgme_widget_message_poll_type")
-POLL_OPTIONS = MetaType("poll_options", ".tgme_widget_message_poll_options")
+POLL_OPTIONS = MetaType("poll_options", ".tgme_widget_message_poll_option")
 POLL_OPTION_PERCENT = MetaType(
     "poll_option_percent", ".tgme_widget_message_poll_option_percent"
 )

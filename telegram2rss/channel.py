@@ -5,7 +5,7 @@ from urllib.parse import urlparse, parse_qs
 from bs4 import BeautifulSoup
 from requests import session as requests_session, sessions as requests_sessions
 
-from telegram_types import (
+from .telegram_types import (
     TEXT,
     PHOTO,
     VIDEO,
@@ -21,6 +21,7 @@ from telegram_types import (
     MESSAGE_AUTHOR,
     MESSAGE_DATE,
     MESSAGE_VIEWS,
+    MESSAGE_VOTERS,
     MESSAGE_NUMBER,
     VIDEO_DURATION,
     VIDEO_THUMB,
@@ -101,17 +102,19 @@ class TGChannel:
 
         for _ in range(pages_to_fetch):
             params = {"before": self.position}
-            source = self.session_object.get(url, params).text
+            source = self.session_object.get(url, params=params).text
             soup = BeautifulSoup(source, "lxml")
 
             try:
-                self.position = soup.find(class_="tme_messages_more")["data-before"]
+                self.position = soup.select_one(".tme_messages_more")["data-before"]
+            except TypeError:
+                self.position = "0"
             except KeyError:
                 self.position = "0"
                 break
-
-            bubbles = soup.find_all(class_="tgme_widget_message_bubble")
-            all_bubbles += bubbles.reverse()
+            bubbles = soup.select(".tgme_widget_message_bubble")
+            bubbles.reverse()
+            all_bubbles += bubbles
 
         all_messages: list = []
 
@@ -122,7 +125,14 @@ class TGChannel:
             number = bubble.select_one(MESSAGE_NUMBER.selector)["href"].split("/")[4]
             author = bubble.select_one(MESSAGE_AUTHOR.selector).text
             date = bubble.select_one(MESSAGE_DATE.selector)["datetime"]
-            views = bubble.select_one(MESSAGE_VIEWS.selector).text
+            try:
+                views = bubble.select_one(MESSAGE_VIEWS.selector).text
+            except AttributeError:
+                views = None
+            try:
+                votes = bubble.select_one(MESSAGE_VOTERS.selector).text
+            except AttributeError:
+                votes = None
             # TODO Detect if message is forwarded or some thing like that.
             message.update(
                 {
@@ -130,15 +140,16 @@ class TGChannel:
                     MESSAGE_AUTHOR.name: author,
                     MESSAGE_DATE.name: date,
                     MESSAGE_VIEWS.name: views,
+                    MESSAGE_VOTERS.name: votes,
                 }
             )
 
             contents = []
 
             # Get text.
-            texts = bubble.select(TEXT.selector).text
+            texts = bubble.select(TEXT.selector)
             for text in texts:
-                contents.append({"type": TEXT.name, "content": text})
+                contents.append({"type": TEXT.name, "content": text.text})
 
             # Get photos urls.
             photos = bubble.select(PHOTO.selector)
@@ -152,10 +163,10 @@ class TGChannel:
             for video in videos:
                 video_url = video["href"]
                 # TODO proxy video thumbnail and sava it as base64.
-                video_thumb_url = video.select(VIDEO_THUMB.selector)["style"].split(
+                video_thumb_url = video.select_one(VIDEO_THUMB.selector)["style"].split(
                     "'"
                 )[1]
-                video_duration = video.select(VIDEO_DURATION.selector).text
+                video_duration = video.select_one(VIDEO_DURATION.selector).text
                 contents.append(
                     {
                         "type": VIDEO.name,
@@ -193,7 +204,7 @@ class TGChannel:
             # Get locations.
             locations = bubble.select(LOCATION.selector)
             for location in locations:
-                url = location.select("tgme_widget_message_location_wrap")["href"]
+                url = location["href"]
                 # Convert URL from google maps to openstreet map and get longuitude and latitude.
                 query = parse_qs(urlparse(url).query)
                 q = query["q"][0]
@@ -215,15 +226,15 @@ class TGChannel:
             # Get polls.
             polls = bubble.select(POLL.selector)
             for poll in polls:
-                poll_question = poll.select(POLL_QUESTION.selector).text
-                poll_type = poll.select(POLL_TYPE.selector).text
+                poll_question = poll.select_one(POLL_QUESTION.selector).text
+                poll_type = poll.select_one(POLL_TYPE.selector).text
 
                 poll_options = []
 
                 options = poll.select(POLL_OPTIONS.selector)
                 for option in options:
-                    option_percent = option.select(POLL_OPTION_PERCENT.selector).text
-                    option_value = option.select(POLL_OPTION_VALUE.selector).text
+                    option_percent = option.select_one(POLL_OPTION_PERCENT.selector).text
+                    option_value = option.select_one(POLL_OPTION_VALUE.selector).text
                     poll_options.append(
                         {"percent": option_percent, "value": option_value}
                     )
@@ -245,10 +256,14 @@ class TGChannel:
 
             unsupported_medias = bubble.select(UNSUPPORTED_MEDIA.selector)
             for media in unsupported_medias:
+                try:
+                    url = media.select_one(UNSUPPORTED_MEDIA_URL.selector)["href"]
+                except KeyError:
+                    continue
                 contents.append(
                     {
                         "type": UNSUPPORTED_MEDIA.name,
-                        "url": media.select(UNSUPPORTED_MEDIA_URL.selector)["href"],
+                        "url": url,
                     }
                 )
 
