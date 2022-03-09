@@ -109,16 +109,14 @@ class TGChannel:
             source = self.session_object.get(self.channel_url, params=params).text
             soup = BeautifulSoup(source, "lxml")
 
-            try:
-                self.position = soup.select_one(".tme_messages_more")["data-before"]
-            except TypeError:
-                self.position = "0"
-            except KeyError:
-                self.position = "0"
-                break
             bubbles = soup.select(".tgme_widget_message_bubble")
             bubbles.reverse()
             all_bubbles += bubbles
+            try:
+                self.position = soup.select_one(".tme_messages_more")["data-before"]
+            except (TypeError, KeyError):
+                self.position = "0"
+                break
 
         # Get channel meta data if they were not fetched before.
         if self.channel_title is None:
