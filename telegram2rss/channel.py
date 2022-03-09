@@ -19,6 +19,8 @@ from .telegram_types import (
     CHANNEL_TITLE,
     CHANNEL_DESCRIPTION,
     CHANNEL_IMAGE,
+    CHANNEL_COUNTERS_VALUES,
+    CHANNEL_COUNTERS_TYPES,
     MESSAGE_AUTHOR,
     MESSAGE_DATE,
     MESSAGE_VIEWS,
@@ -68,14 +70,7 @@ class TGChannel:
     def __init__(
         self, channel_id: str, session_object: requests_sessions.Session = None
     ):
-        """
-        Init method for the Telegram channel class.
-
-        Parameters
-        ----------
-        channel_id : str
-            The Telegram channel id.
-        """
+        """Init method for the Telegram channel class."""
         self.channel_id = channel_id
         # Where we stopped at the last fetch process.
         self.position: Optional[str] = None
@@ -84,6 +79,16 @@ class TGChannel:
             self.session_object = requests_session()
         else:
             self.session_object = session_object
+
+        self.channel_url = f"{TELEGRAM_URL}/s/{self.channel_id}"
+
+        self.channel_title: Optional[str] = None
+        self.channel_description: Optional[str] = None
+        self.channel_image_url: Optional[str] = None
+        self.channel_subscribers_count: Optional[str] = None
+        self.channel_photos_count: Optional[str] = None
+        self.channel_videos_count: Optional[str] = None
+        self.channel_files_count: Optional[str] = None
 
     def fetch_to_python(self, pages_to_fetch=1) -> list:
         """
@@ -97,13 +102,11 @@ class TGChannel:
         if self.position == "0":
             raise FeedEnd("All the pages were already fetched from the channel.")
 
-        url = f"{TELEGRAM_URL}/s/{self.channel_id}"
-
         all_bubbles = []
 
         for _ in range(pages_to_fetch):
             params = {"before": self.position}
-            source = self.session_object.get(url, params=params).text
+            source = self.session_object.get(self.channel_url, params=params).text
             soup = BeautifulSoup(source, "lxml")
 
             try:
@@ -116,6 +119,39 @@ class TGChannel:
             bubbles = soup.select(".tgme_widget_message_bubble")
             bubbles.reverse()
             all_bubbles += bubbles
+
+        # Get channel meta data if they were not fetched before.
+        if self.channel_title is None:
+            # We can access the soup for the last page in the previous for loop.
+            self.channel_title = soup.select_one(CHANNEL_TITLE.selector).text
+        if self.channel_description is None:
+            self.channel_description = soup.select_one(
+                CHANNEL_DESCRIPTION.selector
+            ).text
+        if self.channel_image_url is None:
+            self.channel_image_url = soup.select_one(CHANNEL_IMAGE.selector)["src"]
+
+        if (
+            self.channel_subscribers_count is None
+            or self.channel_photos_count is None
+            or self.channel_videos_count is None
+            or self.channel_files_count is None
+        ):
+            counters_values = soup.select(CHANNEL_COUNTERS_VALUES.selector)
+            counters_types = soup.select(CHANNEL_COUNTERS_TYPES.selector)
+            counters = [
+                (_type.text, count.text)
+                for _type, count in zip(counters_types, counters_values)
+            ]
+            for counter_type, counter_value in counters:
+                if counter_type == "subscriber":
+                    self.channel_subscribers_count = counter_value
+                elif counter_type == "photos":
+                    self.channel_photos_count = counter_value
+                elif counter_type == "video":
+                    self.channel_videos_count = counter_value
+                elif counter_type == "file":
+                    self.channel_files_count = counter_value
 
         all_messages: list = []
 

@@ -18,8 +18,10 @@ VOICE = MessageType("voice", ".tgme_widget_message_voice_player", "🎤")
 DOCUMENT = MessageType("document", ".tgme_widget_message_document_wrap", "📎")
 LOCATION = MessageType("location", ".tgme_widget_message_location_wrap", "📍")
 POLL = MessageType("poll", ".tgme_widget_message_poll", "📊")
-STICKER = MessageType("sticker", ".tgme_widget_message_sticker_wrap .tgme_widget_message_sticker", "🖼️️")
-STICKER_PACKS = MessageType("sticker_packs", "", "📦")
+STICKER = MessageType(
+    "sticker", ".tgme_widget_message_sticker_wrap .tgme_widget_message_sticker", "🖼️️"
+)
+# STICKER_PACKS = MessageType("sticker_packs", "", "📦")
 UNSUPPORTED_MEDIA = MessageType(
     "not_supported_media", ".message_media_not_supported", "❔"
 )
@@ -37,6 +39,14 @@ class MetaType:
 CHANNEL_TITLE = MetaType("channel_title", ".tgme_channel_info_header_title")
 CHANNEL_DESCRIPTION = MetaType("channel_description", ".tgme_channel_info_description")
 CHANNEL_IMAGE = MetaType("channel_description", ".tgme_page_photo_image img")
+CHANNEL_COUNTERS_VALUES = MetaType(
+    "channel_counters_values",
+    ".tgme_channel_info_counters .tgme_channel_info_counter .counter_value",
+)
+CHANNEL_COUNTERS_TYPES = MetaType(
+    "channel_counters_type",
+    ".tgme_channel_info_counters .tgme_channel_info_counter .counter_type",
+)
 
 MESSAGE_AUTHOR = MetaType("author", ".tgme_widget_message_author")
 MESSAGE_DATE = MetaType("date", ".tgme_widget_message_date time")
