@@ -1,14 +1,22 @@
 """Telegram data types and how to scrape them."""
+from dataclasses import dataclass
 
 
+@dataclass
 class MessageType:
     """Type class to make messages types objects."""
 
-    def __init__(self, name: str, selector: str, emoji: str):
-        """Get type information."""
-        self.name = name
-        self.selector = selector
-        self.emoji = emoji
+    name: str
+    selector: str
+    emoji: str
+
+
+@dataclass
+class MetaType:
+    """Type class to make meta data types objects."""
+
+    name: str
+    selector: str
 
 
 TEXT = MessageType("text", ".tgme_widget_message_text", "📃")
@@ -25,15 +33,6 @@ STICKER = MessageType(
 UNSUPPORTED_MEDIA = MessageType(
     "not_supported_media", ".message_media_not_supported", "❔"
 )
-
-
-class MetaType:
-    """Type class to make meta data types objects."""
-
-    def __init__(self, name: str, selector: str):
-        """Get type information."""
-        self.name = name
-        self.selector = selector
 
 
 CHANNEL_TITLE = MetaType("channel_title", ".tgme_channel_info_header_title")
