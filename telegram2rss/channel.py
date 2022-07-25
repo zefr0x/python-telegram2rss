@@ -40,6 +40,8 @@ from .telegram_types import (
     UNSUPPORTED_MEDIA_URL,
 )
 
+from . import conversions
+
 
 TELEGRAM_URL = "https://t.me"
 
@@ -90,7 +92,7 @@ class TGChannel:
         self.channel_videos_count: Optional[str] = None
         self.channel_files_count: Optional[str] = None
 
-    def fetch_to_python(self, pages_to_fetch=1) -> list:
+    def fetch_to_python(self, pages_to_fetch=1) -> tuple:
         """
         Get html code using requests then get the data from it.
 
@@ -320,4 +322,26 @@ class TGChannel:
 
             message.update({"contents": contents})
             all_messages.append(message)
-        return all_messages
+        return tuple(all_messages)
+
+    def fetch_to_rss(self, pages_to_fetch: int = 1):
+        """Fetch channel to python then convert them to rss feed."""
+        messages = self.fetch_to_python(pages_to_fetch)
+        return conversions.python_to_feed_generator(
+            self.channel_id,
+            self.channel_title,
+            self.channel_description,
+            self.channel_image_url,
+            messages,
+        ).rss_str()
+
+    def fetch_to_atom(self, pages_to_fetch: int = 1):
+        """Fetch channel to python then convert them to atom feed."""
+        messages = self.fetch_to_python(pages_to_fetch)
+        return conversions.python_to_feed_generator(
+            self.channel_id,
+            self.channel_title,
+            self.channel_description,
+            self.channel_image_url,
+            messages,
+        ).atom_str()
