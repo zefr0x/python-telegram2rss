@@ -321,6 +321,3 @@ class TGChannel:
             message.update({"contents": contents})
             all_messages.append(message)
         return all_messages
-
-    def fetch_to_rss(self):
-        pass
