@@ -29,61 +29,93 @@ def python_to_feed_generator(
         fe.author({"name": message.get(telegram_types.MESSAGE_AUTHOR.name)})
         fe.published(message.get(telegram_types.MESSAGE_DATE.name))
         fe.link(href=f"{TELEGRAM_URL}/{channel_id}/{fe.id()}", rel="alternate")
-        fe.summary()
+        # fe.summary()
 
-        # TODO Support multible contents.
+        fe.title("")
+        fe.description("")
+
         # TODO Write in the title if the message was forwarded.
         for content in message["contents"]:
             content_type = content.get("type")
             if content_type == telegram_types.TEXT.name:
                 fe.title(content.get("content"))
-                fe.content(content.get("content"))
+                fe.description(fe.description() + f'<p>{content.get("content")}</p>')
             elif content_type == telegram_types.PHOTO.name:
                 if not fe.title():
-                    fe.title(telegram_types.PHOTO.name)
-                fe.content(content.get("url"))
+                    fe.title(f"{telegram_types.PHOTO.name} {fe.id()}")
+                fe.description(
+                    fe.description()
+                    + f'<img src="{content.get("url")}" style="max-width: 400px;"/>'
+                )
             elif content_type == telegram_types.VIDEO.name:
                 if not fe.title():
-                    fe.title(telegram_types.VIDEO.name)
-                fe.content(
-                    content.get("url")
-                    + content.get("thumbnail")
-                    + content.get("duration")
+                    fe.title(f"{telegram_types.VIDEO.name} {fe.id()}")
+                fe.description(
+                    fe.description()
+                    + "<div>"
+                    + f'<a href="{content.get("url")}">'
+                    + f'<img src="{content.get("thumbnail")}" style="display: inline;"/>'
+                    + f'<sup>{content.get("duration")}</sup>'
+                    + "</a>"
+                    + "</div>"
                 )
             elif content_type == telegram_types.VOICE.name:
                 if not fe.title():
-                    fe.title(telegram_types.VOICE.name)
-                fe.content(content.get("url") + content.get("duration"))
+                    fe.title(f"{telegram_types.VOICE.name} {fe.id()}")
+                fe.description(
+                    fe.description()
+                    + "<div>"
+                    + f'<a href="{content.get("url")}">{telegram_types.VOICE.name} </a>'
+                    + f'<sub>{content.get("duration")}</sub>'
+                    + "</div>"
+                )
             elif content_type == telegram_types.DOCUMENT.name:
                 if not fe.title():
-                    fe.title(telegram_types.DOCUMENT.name)
-                fe.content(
-                    content.get("url") + content.get("title") + content.get("size")
+                    fe.title(f"{telegram_types.DOCUMENT.name} {fe.id()}")
+                fe.description(
+                    fe.description()
+                    + "<div>"
+                    + f'<a href="{content.get("url")}">'
+                    + f"{content.get(telegram_types.DOCUMENT_TITLE.name)} </a>"
+                    + f"<sub>{content.get(telegram_types.DOCUMENT_SIZE.name)}</sub>"
+                    + "<div>"
                 )
             elif content_type == telegram_types.LOCATION.name:
                 if not fe.title():
-                    fe.title(telegram_types.LOCATION.name)
-                fe.content(
-                    content.get("url")
-                    + content.get("latitude")
-                    + content.get("longitude")
+                    fe.title(f"{telegram_types.LOCATION.name} {fe.id()}")
+                fe.description(
+                    fe.description()
+                    + "<div>"
+                    + f'<a href="{content.get("url")}">{telegram_types.LOCATION.name} </a>'
+                    + f'<sub>({content.get("latitude")}, {content.get("longitude")})</sub>'
+                    + "</div>"
                 )
             elif content_type == telegram_types.POLL.name:
                 if not fe.title():
-                    fe.title(telegram_types.POLL.name)
-                fe.content(
-                    content.get("poll_question")
-                    + content_type.get("poll_type")
+                    fe.title(f"{telegram_types.POLL.name} {fe.id()}")
+                    # TODO Support polls.
+                fe.description(
+                    fe.description()
+                    + content.get("poll_question")
+                    + content.get("poll_type")
                     + str(content.get("poll_options"))
                     + message.get(telegram_types.MESSAGE_VOTERS.name)
                 )
             elif content_type == telegram_types.STICKER.name:
                 if not fe.title():
-                    fe.title(telegram_types.STICKER.name)
-                fe.content(content.get("sticker_shape" + content.get("sticker_image")))
+                    fe.title(f"{telegram_types.STICKER.name} {fe.id()}")
+                fe.content(
+                    fe.content()
+                    + f'<img src="{content.get("sticker_image")}" style="max-width: 400px;"/>'
+                )
             elif content_type == telegram_types.UNSUPPORTED_MEDIA.name:
                 if not fe.title():
-                    fe.title(telegram_types.UNSUPPORTED_MEDIA.name)
-                fe.content(content.get("url"))
+                    fe.title(f"{telegram_types.UNSUPPORTED_MEDIA.name} {fe.id()}")
+                fe.content(
+                    fe.content()
+                    + "<b>"
+                    + f'<a href="{content.get("url")}">{telegram_types.UNSUPPORTED_MEDIA.name}</a>'
+                    + "</b>"
+                )
 
     return fg

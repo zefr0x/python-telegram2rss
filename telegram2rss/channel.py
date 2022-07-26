@@ -160,6 +160,7 @@ class TGChannel:
 
             # Get message meta data.
             number = bubble.select_one(MESSAGE_NUMBER.selector)["href"].split("/")[4]
+            # TODO Improve parsing when multible authors maintaning the same channel.
             author = bubble.select_one(MESSAGE_AUTHOR.selector).text
             date = bubble.select_one(MESSAGE_DATE.selector)["datetime"]
             try:
@@ -206,6 +207,7 @@ class TGChannel:
                 video_duration = video.select_one(VIDEO_DURATION.selector).text
                 contents.append(
                     {
+                        # TODO Change to keys names.
                         "type": VIDEO.name,
                         "url": video_url,
                         "thumbnail": video_thumb_url,
@@ -220,6 +222,7 @@ class TGChannel:
                 voice_duration = voice.select(VOICE_DURATION.selector).text
 
                 contents.append(
+                    # TODO Change to keys names.
                     {"type": VOICE.name, "url": voice_url, "duration": voice_duration}
                 )
 
@@ -233,8 +236,8 @@ class TGChannel:
                     {
                         "type": DOCUMENT.name,
                         "url": document_url,
-                        "title": document_title,
-                        "size": document_size,
+                        DOCUMENT_TITLE.name: document_title,
+                        DOCUMENT_SIZE.name: document_size,
                     }
                 )
 
@@ -253,6 +256,7 @@ class TGChannel:
                 )
                 contents.append(
                     {
+                        # TODO Change to keys names.
                         "type": LOCATION.name,
                         "url": url,
                         "latitude": latitude,
@@ -280,6 +284,7 @@ class TGChannel:
 
                 contents.append(
                     {
+                        # TODO Change to keys names.
                         "type": POLL.name,
                         "poll_question": poll_question,
                         "poll_type": poll_type,
@@ -295,6 +300,7 @@ class TGChannel:
                 sticker_image = sticker["data-webp"]
                 contents.append(
                     {
+                        # TODO Change to keys names.
                         "type": STICKER.name,
                         "sticker_shape": sticker_shape,
                         "sticker_image": sticker_image,
