@@ -87,10 +87,11 @@ class TGChannel:
         self.channel_title: Optional[str] = None
         self.channel_description: Optional[str] = None
         self.channel_image_url: Optional[str] = None
-        self.channel_subscribers_count: Optional[str] = None
-        self.channel_photos_count: Optional[str] = None
-        self.channel_videos_count: Optional[str] = None
-        self.channel_files_count: Optional[str] = None
+        self.channel_subscribers_count: int = 0
+        self.channel_photos_count: int = 0
+        self.channel_videos_count: int = 0
+        self.channel_files_count: int = 0
+        self.channel_links_count: int = 0
 
     def fetch_to_python(self, pages_to_fetch=1) -> tuple:
         """
@@ -136,6 +137,7 @@ class TGChannel:
             or self.channel_photos_count is None
             or self.channel_videos_count is None
             or self.channel_files_count is None
+            or self.channel_links_count is None
         ):
             counters_values = soup.select(CHANNEL_COUNTERS_VALUES.selector)
             counters_types = soup.select(CHANNEL_COUNTERS_TYPES.selector)
@@ -144,14 +146,16 @@ class TGChannel:
                 for _type, count in zip(counters_types, counters_values)
             ]
             for counter_type, counter_value in counters:
-                if counter_type == "subscriber":
+                if counter_type in ("subscriber", "subscribers"):
                     self.channel_subscribers_count = counter_value
-                elif counter_type == "photos":
+                elif counter_type in ("photo", "photos"):
                     self.channel_photos_count = counter_value
-                elif counter_type == "video":
+                elif counter_type in ("video", "videos"):
                     self.channel_videos_count = counter_value
-                elif counter_type == "file":
+                elif counter_type in ("file", "files"):
                     self.channel_files_count = counter_value
+                elif counter_type in ("link", "links"):
+                    self.channel_links_count = counter_value
 
         all_messages: list = []
 
@@ -207,11 +211,10 @@ class TGChannel:
                 video_duration = video.select_one(VIDEO_DURATION.selector).text
                 contents.append(
                     {
-                        # TODO Change to keys names.
                         "type": VIDEO.name,
                         "url": video_url,
-                        "thumbnail": video_thumb_url,
-                        "duration": video_duration,
+                        VIDEO_THUMB.name: video_thumb_url,
+                        VIDEO_DURATION.name: video_duration,
                     }
                 )
 
@@ -222,8 +225,7 @@ class TGChannel:
                 voice_duration = voice.select(VOICE_DURATION.selector).text
 
                 contents.append(
-                    # TODO Change to keys names.
-                    {"type": VOICE.name, "url": voice_url, "duration": voice_duration}
+                    {"type": VOICE.name, "url": voice_url, VOICE_DURATION.name: voice_duration}
                 )
 
             # Get documents urls and sizes.
@@ -256,9 +258,9 @@ class TGChannel:
                 )
                 contents.append(
                     {
-                        # TODO Change to keys names.
                         "type": LOCATION.name,
                         "url": url,
+                        # TODO Change keys names.
                         "latitude": latitude,
                         "longitude": longitude,
                     }
@@ -284,11 +286,10 @@ class TGChannel:
 
                 contents.append(
                     {
-                        # TODO Change to keys names.
                         "type": POLL.name,
-                        "poll_question": poll_question,
-                        "poll_type": poll_type,
-                        "poll_options": poll_options,
+                        POLL_QUESTION.name: poll_question,
+                        POLL_TYPE.name: poll_type,
+                        POLL_OPTIONS.name: poll_options,
                     }
                 )
 
@@ -300,8 +301,8 @@ class TGChannel:
                 sticker_image = sticker["data-webp"]
                 contents.append(
                     {
-                        # TODO Change to keys names.
                         "type": STICKER.name,
+                        # TODO Change keys names.
                         "sticker_shape": sticker_shape,
                         "sticker_image": sticker_image,
                     }
@@ -341,13 +342,13 @@ class TGChannel:
             messages,
         ).rss_str()
 
-    def fetch_to_atom(self, pages_to_fetch: int = 1):
-        """Fetch channel to python then convert them to atom feed."""
-        messages = self.fetch_to_python(pages_to_fetch)
-        return conversions.python_to_feed_generator(
-            self.channel_id,
-            self.channel_title,
-            self.channel_description,
-            self.channel_image_url,
-            messages,
-        ).atom_str()
+    # def fetch_to_atom(self, pages_to_fetch: int = 1):
+    #     """Fetch channel to python then convert them to atom feed."""
+    #     messages = self.fetch_to_python(pages_to_fetch)
+    #     return conversions.python_to_feed_generator(
+    #         self.channel_id,
+    #         self.channel_title,
+    #         self.channel_description,
+    #         self.channel_image_url,
+    #         messages,
+    #     ).atom_str()

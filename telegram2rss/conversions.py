@@ -54,8 +54,9 @@ def python_to_feed_generator(
                     fe.description()
                     + "<div>"
                     + f'<a href="{content.get("url")}">'
-                    + f'<img src="{content.get("thumbnail")}" style="display: inline;"/>'
-                    + f'<sup>{content.get("duration")}</sup>'
+                    + f'<img src="{content.get(telegram_types.VIDEO_THUMB.name)}"'
+                    + 'style="display: inline;"/>'
+                    + f"<sup>{content.get(telegram_types.VIDEO_DURATION.name)}</sup>"
                     + "</a>"
                     + "</div>"
                 )
@@ -66,7 +67,7 @@ def python_to_feed_generator(
                     fe.description()
                     + "<div>"
                     + f'<a href="{content.get("url")}">{telegram_types.VOICE.name} </a>'
-                    + f'<sub>{content.get("duration")}</sub>'
+                    + f'<sub>{content.get(telegram_types.VOICE_DURATION.name)}</sub>'
                     + "</div>"
                 )
             elif content_type == telegram_types.DOCUMENT.name:
@@ -96,9 +97,9 @@ def python_to_feed_generator(
                     # TODO Support polls.
                 fe.description(
                     fe.description()
-                    + content.get("poll_question")
-                    + content.get("poll_type")
-                    + str(content.get("poll_options"))
+                    + content.get(telegram_types.POLL_QUESTION.name)
+                    + content.get(telegram_types.POLL_TYPE.name)
+                    + str(content.get(telegram_types.POLL_OPTIONS.name))
                     + message.get(telegram_types.MESSAGE_VOTERS.name)
                 )
             elif content_type == telegram_types.STICKER.name:
