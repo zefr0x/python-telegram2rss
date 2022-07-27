@@ -136,30 +136,24 @@ class TGChannel:
             except TypeError:
                 self.channel_image_url = TELEGRAM_ICON
 
-        if (
-            self.channel_subscribers_count is None
-            or self.channel_photos_count is None
-            or self.channel_videos_count is None
-            or self.channel_files_count is None
-            or self.channel_links_count is None
-        ):
-            counters_values = soup.select(CHANNEL_COUNTERS_VALUES.selector)
-            counters_types = soup.select(CHANNEL_COUNTERS_TYPES.selector)
-            counters = [
-                (_type.text, count.text)
-                for _type, count in zip(counters_types, counters_values)
-            ]
-            for counter_type, counter_value in counters:
-                if counter_type in ("subscriber", "subscribers"):
-                    self.channel_subscribers_count = counter_value
-                elif counter_type in ("photo", "photos"):
-                    self.channel_photos_count = counter_value
-                elif counter_type in ("video", "videos"):
-                    self.channel_videos_count = counter_value
-                elif counter_type in ("file", "files"):
-                    self.channel_files_count = counter_value
-                elif counter_type in ("link", "links"):
-                    self.channel_links_count = counter_value
+        # Get channel counters and covert there values to integers.
+        for counter_type, counter_value in [
+            (type_.text, counter_value_to_int(count.text))
+            for type_, count in zip(
+                soup.select(CHANNEL_COUNTERS_TYPES.selector),
+                soup.select(CHANNEL_COUNTERS_VALUES.selector),
+            )
+        ]:
+            if counter_type in ("subscriber", "subscribers"):
+                self.channel_subscribers_count = counter_value
+            elif counter_type in ("photo", "photos"):
+                self.channel_photos_count = counter_value
+            elif counter_type in ("video", "videos"):
+                self.channel_videos_count = counter_value
+            elif counter_type in ("file", "files"):
+                self.channel_files_count = counter_value
+            elif counter_type in ("link", "links"):
+                self.channel_links_count = counter_value
 
         all_messages: list = []
 
@@ -229,7 +223,11 @@ class TGChannel:
                 voice_duration = voice.select(VOICE_DURATION.selector).text
 
                 contents.append(
-                    {"type": VOICE.name, "url": voice_url, VOICE_DURATION.name: voice_duration}
+                    {
+                        "type": VOICE.name,
+                        "url": voice_url,
+                        VOICE_DURATION.name: voice_duration,
+                    }
                 )
 
             # Get documents urls and sizes.
@@ -356,3 +354,50 @@ class TGChannel:
     #         self.channel_image_url,
     #         messages,
     #     ).atom_str()
+
+
+def counter_value_to_int(x: str) -> int:
+    """Convert a string from 3.4M or 1M or 3K or 2B to an integer."""
+    try:
+        x = x.upper()
+        if "CEN" in x:
+            return int(float(x.replace("CEN", "")) * 10**303)
+        elif "GO" in x:
+            return int(float(x.replace("GO", "")) * 10**100)
+        elif "QIT" in x:
+            return int(float(x.replace("QIT", "")) * 10**84)
+        elif "QAT" in x:
+            return int(float(x.replace("QAT", "")) * 10**45)
+        elif "TE" in x:
+            return int(float(x.replace("TE", "")) * 10**42)
+        elif "DU" in x:
+            return int(float(x.replace("DU", "")) * 10**39)
+        elif "UN" in x:
+            return int(float(x.replace("UN", "")) * 10**36)
+        elif "DE" in x:
+            return int(float(x.replace("DE", "")) * 10**33)
+        elif "NO" in x:
+            return int(float(x.replace("NO", "")) * 10**30)
+        elif "OC" in x:
+            return int(float(x.replace("OC", "")) * 10**27)
+        elif "SP" in x:
+            return int(float(x.replace("SP", "")) * 10**24)
+        elif "SX" in x:
+            return int(float(x.replace("SX", "")) * 10**21)
+        elif "QI" in x:
+            return int(float(x.replace("QI", "")) * 10**18)
+        elif "QA" in x:
+            return int(float(x.replace("QA", "")) * 10**15)
+        elif "T" in x:
+            return int(float(x.replace("T", "")) * 10**12)
+        elif "B" in x:
+            return int(float(x.replace("B", "")) * 10**9)
+        elif "M" in x:
+            return int(float(x.replace("M", "")) * 10**6)
+        elif "K" in x:
+            return int(float(x.replace("K", "")) * 10**3)
+        else:
+            return int(x)
+        return 0
+    except Exception:
+        return 0
