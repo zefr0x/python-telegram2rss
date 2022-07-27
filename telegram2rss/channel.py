@@ -44,6 +44,7 @@ from . import conversions
 
 
 TELEGRAM_URL = "https://t.me"
+TELEGRAM_ICON = "https://telegram.org/img/apple-touch-icon.png"
 
 
 class FeedEnd(Exception):
@@ -130,7 +131,10 @@ class TGChannel:
                 CHANNEL_DESCRIPTION.selector
             ).text
         if self.channel_image_url is None:
-            self.channel_image_url = soup.select_one(CHANNEL_IMAGE.selector)["src"]
+            try:
+                self.channel_image_url = soup.select_one(CHANNEL_IMAGE.selector)["src"]
+            except TypeError:
+                self.channel_image_url = TELEGRAM_ICON
 
         if (
             self.channel_subscribers_count is None

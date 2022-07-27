@@ -105,15 +105,15 @@ def python_to_feed_generator(
             elif content_type == telegram_types.STICKER.name:
                 if not fe.title():
                     fe.title(f"{telegram_types.STICKER.name} {fe.id()}")
-                fe.content(
-                    fe.content()
+                fe.description(
+                    fe.description()
                     + f'<img src="{content.get("sticker_image")}" style="max-width: 400px;"/>'
                 )
             elif content_type == telegram_types.UNSUPPORTED_MEDIA.name:
                 if not fe.title():
                     fe.title(f"{telegram_types.UNSUPPORTED_MEDIA.name} {fe.id()}")
-                fe.content(
-                    fe.content()
+                fe.description(
+                    fe.description()
                     + "<b>"
                     + f'<a href="{content.get("url")}">{telegram_types.UNSUPPORTED_MEDIA.name}</a>'
                     + "</b>"
