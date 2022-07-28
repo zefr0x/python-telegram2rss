@@ -26,6 +26,7 @@ from .telegram_types import (
     MESSAGE_VIEWS,
     MESSAGE_VOTERS,
     MESSAGE_NUMBER,
+    VIDEO_ELEMENT,
     VIDEO_DURATION,
     VIDEO_THUMB,
     VOICE_URL,
@@ -203,7 +204,7 @@ class TGChannel:
             # Get videos urls, thumbnails and durations.
             videos = bubble.select(VIDEO.selector)
             for video in videos:
-                video_url = video["href"]
+                video_url = video.select_one(VIDEO_ELEMENT.selector)["src"]
                 # TODO proxy video thumbnail and sava it as base64.
                 video_thumb_url = video.select_one(VIDEO_THUMB.selector)["style"].split(
                     "'"

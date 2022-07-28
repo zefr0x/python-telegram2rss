@@ -53,6 +53,7 @@ MESSAGE_VIEWS = MetaType("views", ".tgme_widget_message_views")
 MESSAGE_VOTERS = MetaType("votes", ".tgme_widget_message_voters")
 MESSAGE_NUMBER = MetaType("url", ".tgme_widget_message_date")
 
+VIDEO_ELEMENT = MetaType("video_element", ".tgme_widget_message_video_wrap video")
 VIDEO_DURATION = MetaType("video_duration", ".tgme_widget_message_video_player time")
 VIDEO_THUMB = MetaType("video_thumbnail", ".tgme_widget_message_video_thumb")
 

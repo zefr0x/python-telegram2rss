@@ -50,12 +50,10 @@ def python_to_feed_generator(
                     fe.title(f"{telegram_types.VIDEO.name} {fe.id()}")
                 fe.description(
                     fe.description()
+                    + f'<video poster="{content.get(telegram_types.VIDEO_THUMB.name)}" '
+                    + f'src="{content.get("url")}" style="max-width: 400px"></video>'
                     + "<div>"
-                    + f'<a href="{content.get("url")}">'
-                    + f'<img src="{content.get(telegram_types.VIDEO_THUMB.name)}"'
-                    + 'style="display: inline;"/>'
                     + f"<sup>{content.get(telegram_types.VIDEO_DURATION.name)}</sup>"
-                    + "</a>"
                     + "</div>"
                 )
             elif content_type == telegram_types.VOICE.name:
