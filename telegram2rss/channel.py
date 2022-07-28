@@ -335,7 +335,7 @@ class TGChannel:
             all_messages.append(message)
         return tuple(all_messages)
 
-    def fetch_to_rss(self, pages_to_fetch: int = 1):
+    def fetch_to_rss(self, pages_to_fetch: int = 1, pretty: bool = False):
         """Fetch channel to python then convert them to rss feed."""
         messages = self.fetch_to_python(pages_to_fetch)
         return conversions.python_to_feed_generator(
@@ -344,7 +344,7 @@ class TGChannel:
             self.channel_description,
             self.channel_image_url,
             messages,
-        ).rss_str()
+        ).rss_str(pretty=pretty)
 
     # def fetch_to_atom(self, pages_to_fetch: int = 1):
     #     """Fetch channel to python then convert them to atom feed."""
