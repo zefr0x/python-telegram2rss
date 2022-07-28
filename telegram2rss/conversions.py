@@ -29,9 +29,7 @@ def python_to_feed_generator(
         fe.author({"name": message.get(telegram_types.MESSAGE_AUTHOR.name)})
         fe.published(message.get(telegram_types.MESSAGE_DATE.name))
         fe.link(href=f"{TELEGRAM_URL}/{channel_id}/{fe.id()}", rel="alternate")
-        # fe.summary()
 
-        fe.title("")
         fe.description("")
 
         # TODO Write in the title if the message was forwarded.
@@ -118,5 +116,8 @@ def python_to_feed_generator(
                     + f'<a href="{content.get("url")}">{telegram_types.UNSUPPORTED_MEDIA.name}</a>'
                     + "</b>"
                 )
+
+        if not fe.description():
+            fe.description("<b>No Content</b>")
 
     return fg
