@@ -93,3 +93,22 @@ def test_unsupported_media():
         "premium"
     )  # A channel with moving stickers messages.
     assert channel.fetch_to_rss(1)
+
+
+def test_counter_value_to_int():
+    """Test the counter_value_to_int function."""
+    with pytest.raises(ValueError):
+        telegram2rss.channel.counter_value_to_int("15Xx")
+
+    with pytest.raises(ValueError):
+        telegram2rss.channel.counter_value_to_int("")
+
+    assert telegram2rss.channel.counter_value_to_int("6.2Go") == 6.2 * 1e100
+    assert telegram2rss.channel.counter_value_to_int("67Un") == 67 * 1e36
+    assert telegram2rss.channel.counter_value_to_int("45T") == 45 * 1e12
+    assert telegram2rss.channel.counter_value_to_int("2.7B") == 2700000000
+    assert telegram2rss.channel.counter_value_to_int("2467.246M") == 2467246000
+    assert telegram2rss.channel.counter_value_to_int("1.57M") == 1570000
+    assert telegram2rss.channel.counter_value_to_int("34.2K") == 34200
+    assert telegram2rss.channel.counter_value_to_int("872") == 872
+    assert telegram2rss.channel.counter_value_to_int("0") == 0

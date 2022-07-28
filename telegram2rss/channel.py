@@ -356,48 +356,34 @@ class TGChannel:
     #     ).atom_str()
 
 
+counter_values_prefixes = (
+    ("CEN", 1e303),
+    ("GO", 1e100),
+    ("QIT", 1e48),
+    ("QAT", 1e45),
+    ("TE", 1e42),
+    ("DU", 1e39),
+    ("UN", 1e36),
+    ("DE", 1e33),
+    ("NO", 1e30),
+    ("OC", 1e27),
+    ("SP", 1e24),
+    ("SX", 1e21),
+    ("QI", 1e18),
+    ("QA", 1e15),
+    ("T", 1e12),
+    ("B", 1e9),
+    ("M", 1e6),
+    ("K", 1e3),
+)
+
+
 def counter_value_to_int(x: str) -> int:
     """Convert a string from 3.4M or 1M or 3K or 2B to an integer."""
-    try:
-        x = x.upper()
-        if "CEN" in x:
-            return int(float(x.replace("CEN", "")) * 10**303)
-        elif "GO" in x:
-            return int(float(x.replace("GO", "")) * 10**100)
-        elif "QIT" in x:
-            return int(float(x.replace("QIT", "")) * 10**84)
-        elif "QAT" in x:
-            return int(float(x.replace("QAT", "")) * 10**45)
-        elif "TE" in x:
-            return int(float(x.replace("TE", "")) * 10**42)
-        elif "DU" in x:
-            return int(float(x.replace("DU", "")) * 10**39)
-        elif "UN" in x:
-            return int(float(x.replace("UN", "")) * 10**36)
-        elif "DE" in x:
-            return int(float(x.replace("DE", "")) * 10**33)
-        elif "NO" in x:
-            return int(float(x.replace("NO", "")) * 10**30)
-        elif "OC" in x:
-            return int(float(x.replace("OC", "")) * 10**27)
-        elif "SP" in x:
-            return int(float(x.replace("SP", "")) * 10**24)
-        elif "SX" in x:
-            return int(float(x.replace("SX", "")) * 10**21)
-        elif "QI" in x:
-            return int(float(x.replace("QI", "")) * 10**18)
-        elif "QA" in x:
-            return int(float(x.replace("QA", "")) * 10**15)
-        elif "T" in x:
-            return int(float(x.replace("T", "")) * 10**12)
-        elif "B" in x:
-            return int(float(x.replace("B", "")) * 10**9)
-        elif "M" in x:
-            return int(float(x.replace("M", "")) * 10**6)
-        elif "K" in x:
-            return int(float(x.replace("K", "")) * 10**3)
-        else:
-            return int(x)
-        return 0
-    except Exception:
-        return 0
+    x = x.upper()
+
+    for prefix, expression in counter_values_prefixes:
+        if prefix in x:
+            return int(float(x.replace(prefix, "")) * expression)
+
+    return int(x)
