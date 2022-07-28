@@ -56,7 +56,7 @@ MESSAGE_NUMBER = MetaType("url", ".tgme_widget_message_date")
 VIDEO_DURATION = MetaType("video_duration", ".tgme_widget_message_video_player time")
 VIDEO_THUMB = MetaType("video_thumbnail", ".tgme_widget_message_video_thumb")
 
-VOICE_URL = MetaType("voice_url", ".tgme_widget_message_voice audio")
+VOICE_URL = MetaType("voice_url", "audio")
 VOICE_DURATION = MetaType(
     "voice_duration",
     ".tgme_widget_message_voice_duration",

@@ -117,7 +117,9 @@ class TGChannel:
             bubbles.reverse()
             all_bubbles += bubbles
             try:
-                self.position = soup.select_one(".tme_messages_more")["data-before"]
+                self.position = urlparse(
+                    soup.find("link", {"rel": "prev"})["href"]
+                ).query.split("=")[1]
             except (TypeError, KeyError):
                 self.position = "0"
                 break
@@ -219,8 +221,8 @@ class TGChannel:
             # Get voices urls and durations.
             voices = bubble.select(VOICE.selector)
             for voice in voices:
-                voice_url = voice.select(VOICE_URL.selector)["src"]
-                voice_duration = voice.select(VOICE_DURATION.selector).text
+                voice_url = voice.select_one(VOICE_URL.selector)["src"]
+                voice_duration = voice.select_one(VOICE_DURATION.selector).text
 
                 contents.append(
                     {
