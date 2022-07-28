@@ -64,8 +64,11 @@ def python_to_feed_generator(
                 fe.description(
                     fe.description()
                     + "<div>"
+                    + f'<audio src="{content.get("url")}">'
+                    + "</div>"
+                    + "<div>"
                     + f'<a href="{content.get("url")}">{telegram_types.VOICE.name} </a>'
-                    + f'<sub>{content.get(telegram_types.VOICE_DURATION.name)}</sub>'
+                    + f"<sub>{content.get(telegram_types.VOICE_DURATION.name)}</sub>"
                     + "</div>"
                 )
             elif content_type == telegram_types.DOCUMENT.name:
