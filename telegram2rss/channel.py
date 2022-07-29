@@ -12,6 +12,8 @@ from .telegram_types import (
     VOICE,
     DOCUMENT,
     LOCATION,
+    LOCATION_LATITUDE,
+    LOCATION_LONGITUDE,
     POLL,
     STICKER,
     # STICKER_PACKS,
@@ -265,9 +267,8 @@ class TGChannel:
                     {
                         "type": LOCATION.name,
                         "url": url,
-                        # TODO Change keys names.
-                        "latitude": latitude,
-                        "longitude": longitude,
+                        LOCATION_LATITUDE.name: latitude,
+                        LOCATION_LONGITUDE.name: longitude,
                     }
                 )
 

@@ -87,7 +87,8 @@ def python_to_feed_generator(
                     fe.description()
                     + "<div>"
                     + f'<a href="{content.get("url")}">{telegram_types.LOCATION.name} </a>'
-                    + f'<sub>({content.get("latitude")}, {content.get("longitude")})</sub>'
+                    + f"<sub>({content.get(telegram_types.LOCATION_LATITUDE.name)}, "
+                    + f"{content.get(telegram_types.LOCATION_LONGITUDE.name)})</sub>"
                     + "</div>"
                 )
             elif content_type == telegram_types.POLL.name:

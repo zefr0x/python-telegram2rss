@@ -1,4 +1,5 @@
 """Telegram data types and how to scrape them."""
+from typing import Optional
 from dataclasses import dataclass
 
 
@@ -16,7 +17,7 @@ class MetaType:
     """Type class to make meta data types objects."""
 
     name: str
-    selector: str
+    selector: Optional[str]
 
 
 TEXT = MessageType("text", ".tgme_widget_message_text", "📃")
@@ -65,6 +66,9 @@ VOICE_DURATION = MetaType(
 
 DOCUMENT_TITLE = MetaType("document_title", ".tgme_widget_message_document_title")
 DOCUMENT_SIZE = MetaType("document_size", ".tgme_widget_message_document_extra")
+
+LOCATION_LATITUDE = MetaType("latitude", None)
+LOCATION_LONGITUDE = MetaType("longitude", None)
 
 POLL_QUESTION = MetaType("poll_question", ".tgme_widget_message_poll_question")
 POLL_TYPE = MetaType("poll_type", ".tgme_widget_message_poll_type")
