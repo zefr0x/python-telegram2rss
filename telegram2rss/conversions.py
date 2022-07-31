@@ -93,14 +93,28 @@ def python_to_feed_generator(
                 )
             elif content_type == telegram_types.POLL.name:
                 if not fe.title():
-                    fe.title(f"{telegram_types.POLL.name} {fe.id()}")
-                    # TODO Support polls.
+                    fe.title(content.get(telegram_types.POLL_QUESTION.name))
                 fe.description(
                     fe.description()
-                    + content.get(telegram_types.POLL_QUESTION.name)
+                    + "<div>"
+                    + f"<h1>{content.get(telegram_types.POLL_QUESTION.name)}</h1>"
+                    + "<ul>"
+                    + "".join(
+                        [
+                            f"<li><b>({option.get(telegram_types.POLL_OPTION_PERCENT.name)})</b> "
+                            + f"{option.get(telegram_types.POLL_OPTION_VALUE.name)}</li>"
+                            for option in content.get(telegram_types.POLL_OPTIONS.name)
+                        ]
+                    )
+                    + "</ul>"
+                    + "<div>"
+                    + "<b>"
                     + content.get(telegram_types.POLL_TYPE.name)
-                    + str(content.get(telegram_types.POLL_OPTIONS.name))
-                    + message.get(telegram_types.MESSAGE_VOTERS.name)
+                    + f" ({telegram_types.MESSAGE_VOTERS.name}: "
+                    + f"{message.get(telegram_types.MESSAGE_VOTERS.name)})"
+                    + "</b>"
+                    + "</div>"
+                    + "</div>"
                 )
             elif content_type == telegram_types.STICKER.name:
                 if not fe.title():

@@ -289,7 +289,10 @@ class TGChannel:
                     ).text
                     option_value = option.select_one(POLL_OPTION_VALUE.selector).text
                     poll_options.append(
-                        {"percent": option_percent, "value": option_value}
+                        {
+                            POLL_OPTION_PERCENT.name: option_percent,
+                            POLL_OPTION_VALUE.name: option_value,
+                        }
                     )
 
                 contents.append(

@@ -59,8 +59,10 @@ def test_photos():
 
 def test_polls():
     """Test polls."""
-    # TODO
-    ...
+    channel = telegram2rss.TGChannel(
+        "Polls_ar"
+    )  # A channel with polls and some random things.
+    assert channel.fetch_to_rss(2)
 
 
 def test_voice():
