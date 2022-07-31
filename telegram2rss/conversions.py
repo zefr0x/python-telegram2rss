@@ -1,4 +1,5 @@
 """Conversions from python."""
+from functools import cache
 from typing import Optional
 
 from feedgen.feed import FeedGenerator
@@ -6,6 +7,18 @@ from feedgen.feed import FeedGenerator
 from . import telegram_types
 
 TELEGRAM_URL = "https://t.me"
+
+
+@cache
+def get_generator_data() -> tuple[str, ...]:
+    """
+    Return data should be displaced as generator data in feeds.
+
+    This function is defined to avoid circular import.
+    """
+    from . import __name__, __version__, __url__
+
+    return __name__, __version__, __url__
 
 
 def python_to_feed_generator(
@@ -21,6 +34,8 @@ def python_to_feed_generator(
     fg.link(href=f"{TELEGRAM_URL}/s/{channel_id}", rel="via")
     fg.description(channel_description or channel_id)
     fg.image(channel_image_url)
+
+    fg.generator(*get_generator_data())
 
     for message in messages:
         fe = fg.add_entry()
