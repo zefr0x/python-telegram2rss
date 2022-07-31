@@ -45,10 +45,9 @@ def test_fetching_when_feed_ends():
     """Test if it will raise an exception when there is no more messages in the channel."""
     channel = telegram2rss.TGChannel("username")  # A Channel with only tow messages.
 
-    assert channel.fetch_to_python(1)
-
     with pytest.raises(telegram2rss.channel.FeedEnd):
-        assert channel.fetch_to_python(1)
+        for _ in range(10):  # TO make sure that the test will not brake in the future.
+            assert channel.fetch_to_python(1)
 
 
 def test_photos():
@@ -73,8 +72,12 @@ def test_voice():
 
 def test_documents():
     """Test documents messages."""
-    # TODO
-    ...
+    channel = telegram2rss.TGChannel(
+        "TAndroidAPK"
+    )  # A channel with documents and links messages.
+    assert channel.fetch_to_rss(1)
+    assert channel.channel_files_count > 0
+    assert channel.channel_links_count > 0
 
 
 def test_locations():
