@@ -2,13 +2,12 @@
 from pathlib import Path
 from setuptools import setup, find_packages
 
-from telegram2rss import __version__, __author__, __maintainer__, __license__
+from telegram2rss import __name__, __version__, __author__, __maintainer__, __license__, __url__
 
 HERE = Path(__file__).parent
 
 README = (HERE / "README.md").read_text()
 
-URL = "https://github.com/ZER0-X/python-telegram2rss"
 ISSUES = "https://github.com/ZER0-X/python-telegram2rss/issues"
 CHANGELOG = "https://github.com/ZER0-X/python-telegram2rss/blob/main/CHANGELOG.md"
 
@@ -20,12 +19,12 @@ DESCRIPTION = (
 
 
 setup(
-    name="telegram2rss",
+    name=__name__,
     version=__version__,
     author=__author__,
     maintainer=__maintainer__,
     license=__license__,
-    url=URL,
+    url=__url__,
     project_urls={
         "Issues": ISSUES,
         "Changelog": CHANGELOG,
