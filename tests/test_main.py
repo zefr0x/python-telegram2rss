@@ -52,8 +52,13 @@ def test_fetching_when_feed_ends():
 
 def test_photos():
     """Test photos messages."""
-    # TODO
-    ...
+    channel = telegram2rss.TGChannel(
+        "wallpapers"
+    )  # A channel with wallpapers images and files.
+    assert channel.fetch_to_rss(1)
+
+    assert channel.channel_photos_count > 0
+    assert channel.channel_files_count > 0
 
 
 def test_polls():
@@ -76,6 +81,7 @@ def test_documents():
         "TAndroidAPK"
     )  # A channel with documents and links messages.
     assert channel.fetch_to_rss(1)
+
     assert channel.channel_files_count > 0
     assert channel.channel_links_count > 0
 
@@ -88,8 +94,10 @@ def test_locations():
 
 def test_stickers():
     """Test normal stickers with are just a photos in another form."""
-    # TODO Add a channel with normal stickers messages.
-    ...
+    channel = telegram2rss.TGChannel(
+        "tstickers"
+    )  # A channel with normal telegram stickers.
+    assert channel.fetch_to_rss(2)
 
 
 def test_unsupported_media():

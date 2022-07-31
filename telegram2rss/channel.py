@@ -324,6 +324,7 @@ class TGChannel:
             #     # Can't be implemented since we cant access them via the web interface.
             #     pass
 
+            # TODO Improve selector since it work with normal stickers also.
             unsupported_medias = bubble.select(UNSUPPORTED_MEDIA.selector)
             for media in unsupported_medias:
                 try:
