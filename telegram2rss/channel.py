@@ -41,6 +41,8 @@ from .telegram_types import (
     POLL_OPTION_PERCENT,
     POLL_OPTION_VALUE,
     UNSUPPORTED_MEDIA_URL,
+    STICKER_SHAPE,
+    STICKER_IMAGE,
 )
 
 from . import conversions
@@ -308,9 +310,8 @@ class TGChannel:
                 contents.append(
                     {
                         "type": STICKER.name,
-                        # TODO Change keys names.
-                        "sticker_shape": sticker_shape,
-                        "sticker_image": sticker_image,
+                        STICKER_SHAPE.name: sticker_shape,
+                        STICKER_IMAGE.name: sticker_image,
                     }
                 )
 

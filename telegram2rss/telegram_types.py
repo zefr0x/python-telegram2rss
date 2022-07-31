@@ -81,6 +81,9 @@ POLL_OPTION_VALUE = MetaType(
     ".tgme_widget_message_poll_option_value .tgme_widget_message_poll_option_text",
 )
 
+STICKER_SHAPE = MetaType("sticker_shape", None)
+STICKER_IMAGE = MetaType("sticker_image", None)
+
 UNSUPPORTED_MEDIA_URL = MetaType(
     "unsupported_media_url", ".message_media_view_in_telegram"
 )
