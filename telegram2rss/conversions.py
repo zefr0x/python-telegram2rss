@@ -47,7 +47,7 @@ def python_to_feed_generator(
 
         fe.description("")
 
-        # TODO Write in the title if the message was forwarded.
+        # TODO: Write in the title if the message was forwarded.
         for content in message["contents"]:
             content_type = content.get("type")
             if content_type == telegram_types.TEXT.name:

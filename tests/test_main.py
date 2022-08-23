@@ -19,7 +19,7 @@ def test_channel_meta_data():
     # This also test fetching multiple pages.
     assert channel.fetch_to_python(2)
     # Check if it is a will formed XML.
-    # TODO Test it against XML shame (XSD).
+    # TODO: Test it against XML shame (XSD).
     assert ElementTree.fromstring(channel.fetch_to_rss(1))
 
     assert channel.channel_title
@@ -71,7 +71,7 @@ def test_polls():
 
 def test_voice():
     """Test voice messages."""
-    # TODO
+    # TODO:
     ...
 
 
@@ -88,7 +88,7 @@ def test_documents():
 
 def test_locations():
     """Test maps or geo location messages."""
-    # TODO
+    # TODO:
     ...
 
 

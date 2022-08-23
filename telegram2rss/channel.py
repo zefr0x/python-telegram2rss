@@ -169,7 +169,7 @@ class TGChannel:
 
             # Get message meta data.
             number = bubble.select_one(MESSAGE_NUMBER.selector)["href"].split("/")[4]
-            # TODO Improve parsing when multible authors maintaning the same channel.
+            # TODO: Improve parsing when multible authors maintaning the same channel.
             author = bubble.select_one(MESSAGE_AUTHOR.selector).text
             date = bubble.select_one(MESSAGE_DATE.selector)["datetime"]
             try:
@@ -180,7 +180,7 @@ class TGChannel:
                 votes = bubble.select_one(MESSAGE_VOTERS.selector).text
             except AttributeError:
                 votes = None
-            # TODO Detect if message is forwarded or some thing like that.
+            # TODO: Detect if message is forwarded or some thing like that.
             message.update(
                 {
                     MESSAGE_NUMBER.name: number,
@@ -201,7 +201,7 @@ class TGChannel:
             # Get photos urls.
             photos = bubble.select(PHOTO.selector)
             for photo in photos:
-                # TODO proxy photons and sava them as base64.
+                # TODO: proxy photons and sava them as base64.
                 photo = photo["style"].split("'")[1]
                 contents.append({"type": PHOTO.name, "url": photo})
 
@@ -209,7 +209,7 @@ class TGChannel:
             videos = bubble.select(VIDEO.selector)
             for video in videos:
                 video_url = video.select_one(VIDEO_ELEMENT.selector)["src"]
-                # TODO proxy video thumbnail and sava it as base64.
+                # TODO: proxy video thumbnail and sava it as base64.
                 video_thumb_url = video.select_one(VIDEO_THUMB.selector)["style"].split(
                     "'"
                 )[1]
@@ -308,7 +308,7 @@ class TGChannel:
             stickers = bubble.select(STICKER.selector)
             for sticker in stickers:
                 sticker_shape = sticker["style"].split("'")[1]  # base64 svg image
-                # TODO proxy image
+                # TODO: proxy image
                 sticker_image = sticker["data-webp"]
                 contents.append(
                     {
@@ -324,7 +324,7 @@ class TGChannel:
             #     # Can't be implemented since we cant access them via the web interface.
             #     pass
 
-            # TODO Improve selector since it work with normal stickers also.
+            # TODO: Improve selector since it work with normal stickers also.
             unsupported_medias = bubble.select(UNSUPPORTED_MEDIA.selector)
             for media in unsupported_medias:
                 try:
