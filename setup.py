@@ -2,14 +2,11 @@
 from pathlib import Path
 from setuptools import setup, find_packages
 
-from telegram2rss.__about__ import (
-    __name__,
-    __version__,
-    __author__,
-    __maintainer__,
-    __license__,
-    __url__,
-)
+__name__ = __version__ = __author__ = __maintainer__ = __license__ = __url__ = ""
+# This should load the data from __about__.py without importing __init__.py
+# HACK: Need a better sulotion.
+with open("./telegram2rss/__about__.py") as f:
+    exec(f.read())
 
 HERE = Path(__file__).parent
 
