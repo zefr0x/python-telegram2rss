@@ -23,6 +23,7 @@ from .telegram_types import (
     CHANNEL_IMAGE,
     CHANNEL_COUNTERS_VALUES,
     CHANNEL_COUNTERS_TYPES,
+    MESSAGE_OWNER,
     MESSAGE_AUTHOR,
     MESSAGE_DATE,
     MESSAGE_VIEWS,
@@ -116,7 +117,7 @@ class TGChannel:
 
         for _ in range(pages_to_fetch):
             params = {"before": self.position}
-            # TODO: Get data directly witch a request like in the javascript,
+            # TODO: Get data directly with a request like in the javascript,
             # rather then downaloding the whole page.
             source = self.session_object.get(self.channel_url, params=params).text
             soup = BeautifulSoup(source, "lxml")
@@ -172,9 +173,12 @@ class TGChannel:
 
             # Get message meta data.
             number = bubble.select_one(MESSAGE_NUMBER.selector)["href"].split("/")[4]
-            # TODO: Improve parsing when multible authors maintaning the same channel.
-            author = bubble.select_one(MESSAGE_AUTHOR.selector).text
+            owner = bubble.select_one(MESSAGE_OWNER.selector).text
             date = bubble.select_one(MESSAGE_DATE.selector)["datetime"]
+            try:
+                author = bubble.select_one(MESSAGE_AUTHOR.selector).text
+            except AttributeError:
+                author = None
             try:
                 views = bubble.select_one(MESSAGE_VIEWS.selector).text
             except AttributeError:
@@ -190,6 +194,7 @@ class TGChannel:
             message.update(
                 {
                     MESSAGE_NUMBER.name: number,
+                    MESSAGE_OWNER.name: owner,
                     MESSAGE_AUTHOR.name: author,
                     MESSAGE_DATE.name: date,
                     MESSAGE_VIEWS.name: views,

@@ -41,7 +41,12 @@ def python_to_feed_generator(
         fe = fg.add_entry()
 
         fe.id(message.get(telegram_types.MESSAGE_NUMBER.name))
-        fe.author({"name": message.get(telegram_types.MESSAGE_AUTHOR.name)})
+        fe.author(
+            [
+                {"email": message.get(telegram_types.MESSAGE_AUTHOR.name)},
+                {"email": message.get(telegram_types.MESSAGE_OWNER.name)},
+            ]
+        )
         fe.published(message.get(telegram_types.MESSAGE_DATE.name))
         fe.link(href=f"{TELEGRAM_URL}/{channel_id}/{fe.id()}", rel="alternate")
 

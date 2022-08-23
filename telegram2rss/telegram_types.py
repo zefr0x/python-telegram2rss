@@ -48,7 +48,8 @@ CHANNEL_COUNTERS_TYPES = MetaType(
     ".tgme_channel_info_counters .tgme_channel_info_counter .counter_type",
 )
 
-MESSAGE_AUTHOR = MetaType("author", ".tgme_widget_message_author")
+MESSAGE_OWNER = MetaType("owner", ".tgme_widget_message_owner_name")
+MESSAGE_AUTHOR = MetaType("author", ".tgme_widget_message_from_author")
 MESSAGE_DATE = MetaType("date", ".tgme_widget_message_date time")
 MESSAGE_VIEWS = MetaType("views", ".tgme_widget_message_views")
 MESSAGE_VOTERS = MetaType("votes", ".tgme_widget_message_voters")
