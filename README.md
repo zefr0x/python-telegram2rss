@@ -1,4 +1,11 @@
 # telegram2rss
+
+[![Downloads count all](https://static.pepy.tech/personalized-badge/telegram2rss?period=total&units=international_system&left_color=grey&right_color=brightgreen&left_text=Downloads)](https://pepy.tech/project/telegram2rss)
+[![Downloads count per month](https://static.pepy.tech/personalized-badge/telegram2rss?period=month&units=international_system&left_color=grey&right_color=brightgreen&left_text=Downloads/month)](https://pepy.tech/project/telegram2rss)
+[![Downloads count per week](https://static.pepy.tech/personalized-badge/telegram2rss?period=week&units=international_system&left_color=grey&right_color=brightgreen&left_text=Downloads/week)](https://pepy.tech/project/telegram2rss)
+
+![PyPI](https://img.shields.io/pypi/v/telegram2rss)
+
 A python library to fetch data from public Telegram channels to use them as a python object or RSS feed.
 
 ## Installation
