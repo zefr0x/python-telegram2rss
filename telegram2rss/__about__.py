@@ -1,7 +1,7 @@
 """Some data about the package."""
 
 __name__ = "telegram2rss"
-__version__ = "0.1.0.alpha.0"
+__version__ = "0.1.0"
 __author__ = "zer0-x"
 __maintainer__ = __author__
 __license__ = "GPL-3.0"
