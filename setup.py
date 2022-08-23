@@ -2,7 +2,7 @@
 from pathlib import Path
 from setuptools import setup, find_packages
 
-from telegram2rss import (
+from telegram2rss.__about__ import (
     __name__,
     __version__,
     __author__,
