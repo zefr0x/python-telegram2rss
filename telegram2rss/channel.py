@@ -28,6 +28,7 @@ from .telegram_types import (
     MESSAGE_VIEWS,
     MESSAGE_VOTERS,
     MESSAGE_NUMBER,
+    MESSAGE_FORWARDED_FROM_NAME,
     VIDEO_ELEMENT,
     VIDEO_DURATION,
     VIDEO_THUMB,
@@ -115,6 +116,8 @@ class TGChannel:
 
         for _ in range(pages_to_fetch):
             params = {"before": self.position}
+            # TODO: Get data directly witch a request like in the javascript,
+            # rather then downaloding the whole page.
             source = self.session_object.get(self.channel_url, params=params).text
             soup = BeautifulSoup(source, "lxml")
 
@@ -180,7 +183,10 @@ class TGChannel:
                 votes = bubble.select_one(MESSAGE_VOTERS.selector).text
             except AttributeError:
                 votes = None
-            # TODO: Detect if message is forwarded or some thing like that.
+            try:
+                forwarded_from_name = bubble.select_one(MESSAGE_FORWARDED_FROM_NAME.selector).text
+            except AttributeError:
+                forwarded_from_name = None
             message.update(
                 {
                     MESSAGE_NUMBER.name: number,
@@ -188,6 +194,7 @@ class TGChannel:
                     MESSAGE_DATE.name: date,
                     MESSAGE_VIEWS.name: views,
                     MESSAGE_VOTERS.name: votes,
+                    MESSAGE_FORWARDED_FROM_NAME.name: forwarded_from_name,
                 }
             )
 
