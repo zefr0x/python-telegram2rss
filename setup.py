@@ -2,7 +2,14 @@
 from pathlib import Path
 from setuptools import setup, find_packages
 
-from telegram2rss import __name__, __version__, __author__, __maintainer__, __license__, __url__
+from telegram2rss import (
+    __name__,
+    __version__,
+    __author__,
+    __maintainer__,
+    __license__,
+    __url__,
+)
 
 HERE = Path(__file__).parent
 
@@ -33,7 +40,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=README,
     packages=find_packages(),
-    install_requires=[""],
+    install_requires=["requests", "beautifulsoup4", "lxml", "feedgen"],
     tests_require=["pytest"],
     test_suite="tests",
     keywords=["Python", "Telegram", "RSS"],
