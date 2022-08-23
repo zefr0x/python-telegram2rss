@@ -2,7 +2,27 @@
 A python library to fetch data from public Telegram channels to use them as a python object or RSS feed.
 
 ## Installation
-To be added later...
+
+### From the git repo
+```shell
+git clone https://github.com/zer0-x/python-telegram2rss.git
+
+cd python-telegram2rss
+
+python3 setup.py install
+```
+
+> It is recommended to use a virtual environment.
+
+### pypi
+```shell
+python3 -m pip install telegram2rss
+```
+
+> It is recommended to use a virtual environment.
+
+### AUR
+Not available yet...
 
 ## Usage
 ### Fetch to python
@@ -37,6 +57,10 @@ s.proxies = {'http': "socks5://127.0.0.1:9050",
 channel = telegram2rss.TGChannel(channel_id, session_object=s)
 ```
 
+> **Warning**
+> Images will be included as links, so they will not be proxied unless you are using a proxy in your RSS reader.
+> Anyway there is a plan to implement a way to download them and included them as bash64 rather then links.
+
 ### Fetch to [RSS](https://en.wikipedia.org/wiki/RSS)
 ```python
 import telegram2rss
@@ -55,7 +79,7 @@ with open("telegramtips_feed.rss", "w") as f:
 
 > You can create a cron job or a systemd timer to run a script every while to update the file.
 
-#### Creating a flask web app
+#### Creating a [flask](https://flask.palletsprojects.com) web app
 ```python
 """A simple web app to create RSS feed from a telegram channel."""
 from flask import Flask
