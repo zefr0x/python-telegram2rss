@@ -1,6 +1,6 @@
 """Telegram channel class."""
 from typing import Optional
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlsplit, parse_qs
 
 from bs4 import BeautifulSoup
 from requests import session as requests_session, sessions as requests_sessions
@@ -126,9 +126,9 @@ class TGChannel:
             bubbles.reverse()
             all_bubbles += bubbles
             try:
-                self.position = urlparse(
+                self.position = parse_qs(urlsplit(
                     soup.find("link", {"rel": "prev"})["href"]
-                ).query.split("=")[1]
+                ).query)["before"][0]
             except (TypeError, KeyError):
                 self.position = "0"
                 break
@@ -269,7 +269,7 @@ class TGChannel:
             for location in locations:
                 url = location["href"]
                 # Convert URL from google maps to openstreet map and get longuitude and latitude.
-                query = parse_qs(urlparse(url).query)
+                query = parse_qs(urlsplit(url).query)
                 q = query["q"][0]
                 zoom = query["z"][0]
                 latitude, longitude = tuple(q.split(","))
