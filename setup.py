@@ -1,5 +1,6 @@
 """Setup file for the library."""
 from pathlib import Path
+from pkg_resources import parse_requirements
 from setuptools import setup, find_packages
 
 __name__ = __version__ = __author__ = __maintainer__ = __license__ = __url__ = ""
@@ -22,6 +23,12 @@ DESCRIPTION = (
 )
 
 
+with open("requirements/requirements.in", "r") as requirements_in:
+    requirements = [
+        str(requirement) for requirement in parse_requirements(requirements_in)
+    ]
+
+
 setup(
     name=__name__,
     version=__version__,
@@ -37,7 +44,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=README,
     packages=find_packages(),
-    install_requires=["requests", "beautifulsoup4", "lxml", "feedgen"],
+    install_requires=requirements,
     tests_require=["pytest"],
     test_suite="tests",
     keywords=["Python", "Telegram", "RSS"],
