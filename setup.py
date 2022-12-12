@@ -1,7 +1,9 @@
 """Setup file for the library."""
 from pathlib import Path
+
 from pkg_resources import parse_requirements
-from setuptools import setup, find_packages
+from setuptools import find_packages
+from setuptools import setup
 
 __name__ = __version__ = __author__ = __maintainer__ = __license__ = __url__ = ""
 # This should load the data from __about__.py without importing __init__.py

@@ -7,7 +7,7 @@ from requests import Session
 import telegram2rss
 
 
-def test_channel_meta_data():
+def test_channel_meta_data() -> None:
     """Create a TGChannel object and call fetch_to_python method then test channel meta data.
 
     This test also covers text and videos parsing.
@@ -25,8 +25,10 @@ def test_channel_meta_data():
     assert channel.channel_title
     assert channel.channel_description
     assert (
-        channel.channel_image_url.startswith("https://cdn4.telegram-cdn.org/file/")
-        and channel.channel_image_url.endswith(".jpg")
+        (channel.channel_image_url or "").startswith(
+            "https://cdn4.telegram-cdn.org/file/"
+        )
+        and (channel.channel_image_url or "").endswith(".jpg")
     ) or channel.channel_image_url == telegram2rss.channel.TELEGRAM_ICON
     assert channel.channel_subscribers_count >= 0
     assert channel.channel_photos_count >= 0
@@ -36,12 +38,12 @@ def test_channel_meta_data():
     assert channel.channel_url.startswith(telegram2rss.TELEGRAM_URL)
 
 
-def test_custom_requests_session():
+def test_custom_requests_session() -> None:
     """Create a custom requests session and use it in TGChannel."""
     assert telegram2rss.TGChannel("TelegramTips", Session()).fetch_to_python(1)
 
 
-def test_fetching_when_feed_ends():
+def test_fetching_when_feed_ends() -> None:
     """Test if it will raise an exception when there is no more messages in the channel."""
     channel = telegram2rss.TGChannel("username")  # A Channel with only tow messages.
 
@@ -50,7 +52,7 @@ def test_fetching_when_feed_ends():
             assert channel.fetch_to_python(1)
 
 
-def test_photos():
+def test_photos() -> None:
     """Test photos messages."""
     channel = telegram2rss.TGChannel(
         "wallpapers"
@@ -61,7 +63,7 @@ def test_photos():
     assert channel.channel_files_count > 0
 
 
-def test_polls():
+def test_polls() -> None:
     """Test polls."""
     channel = telegram2rss.TGChannel(
         "Polls_ar"
@@ -69,13 +71,13 @@ def test_polls():
     assert channel.fetch_to_rss(2)
 
 
-def test_voice():
+def test_voice() -> None:
     """Test voice messages."""
     # TODO:
     ...
 
 
-def test_documents():
+def test_documents() -> None:
     """Test documents messages."""
     channel = telegram2rss.TGChannel(
         "TAndroidAPK"
@@ -86,13 +88,13 @@ def test_documents():
     assert channel.channel_links_count > 0
 
 
-def test_locations():
+def test_locations() -> None:
     """Test maps or geo location messages."""
     # TODO:
     ...
 
 
-def test_stickers():
+def test_stickers() -> None:
     """Test normal stickers with are just a photos in another form."""
     channel = telegram2rss.TGChannel(
         "tstickers"
@@ -100,7 +102,7 @@ def test_stickers():
     assert channel.fetch_to_rss(2)
 
 
-def test_unsupported_media():
+def test_unsupported_media() -> None:
     """Test unsupported media that can be only displayed from the telegram website."""
     channel = telegram2rss.TGChannel(
         "premium"
@@ -108,7 +110,7 @@ def test_unsupported_media():
     assert channel.fetch_to_rss(1)
 
 
-def test_counter_value_to_int():
+def test_counter_value_to_int() -> None:
     """Test the counter_value_to_int function."""
     with pytest.raises(ValueError):
         telegram2rss.channel.counter_value_to_int("15Xx")

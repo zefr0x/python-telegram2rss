@@ -1,53 +1,14 @@
 """Telegram channel class."""
 from typing import Optional
-from urllib.parse import urlsplit, parse_qs
+from urllib.parse import parse_qs
+from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup
-from requests import session as requests_session, sessions as requests_sessions
-
-from .telegram_types import (
-    TEXT,
-    PHOTO,
-    VIDEO,
-    VOICE,
-    DOCUMENT,
-    LOCATION,
-    LOCATION_LATITUDE,
-    LOCATION_LONGITUDE,
-    POLL,
-    STICKER,
-    # STICKER_PACKS,
-    UNSUPPORTED_MEDIA,
-    CHANNEL_TITLE,
-    CHANNEL_DESCRIPTION,
-    CHANNEL_IMAGE,
-    CHANNEL_COUNTERS_VALUES,
-    CHANNEL_COUNTERS_TYPES,
-    MESSAGE_OWNER,
-    MESSAGE_AUTHOR,
-    MESSAGE_DATE,
-    MESSAGE_VIEWS,
-    MESSAGE_VOTERS,
-    MESSAGE_NUMBER,
-    MESSAGE_FORWARDED_FROM_NAME,
-    VIDEO_ELEMENT,
-    VIDEO_DURATION,
-    VIDEO_THUMB,
-    VOICE_URL,
-    VOICE_DURATION,
-    DOCUMENT_TITLE,
-    DOCUMENT_SIZE,
-    POLL_QUESTION,
-    POLL_TYPE,
-    POLL_OPTIONS,
-    POLL_OPTION_PERCENT,
-    POLL_OPTION_VALUE,
-    UNSUPPORTED_MEDIA_URL,
-    STICKER_SHAPE,
-    STICKER_IMAGE,
-)
+from requests import session as requests_session
+from requests import sessions as requests_sessions
 
 from . import conversions
+from . import telegram_types
 
 
 TELEGRAM_URL = "https://t.me"
@@ -78,8 +39,10 @@ class TGChannel:
     """
 
     def __init__(
-        self, channel_id: str, session_object: requests_sessions.Session = None
-    ):
+        self,
+        channel_id: str,
+        session_object: Optional[requests_sessions.Session] = None,
+    ) -> None:
         """Init method for the Telegram channel class."""
         self.channel_id = channel_id
         # Where we stopped at the last fetch process.
@@ -101,7 +64,7 @@ class TGChannel:
         self.channel_files_count: int = 0
         self.channel_links_count: int = 0
 
-    def fetch_to_python(self, pages_to_fetch=1) -> tuple:
+    def fetch_to_python(self, pages_to_fetch: int = 1) -> tuple:
         """
         Get html code using requests then get the data from it.
 
@@ -126,9 +89,9 @@ class TGChannel:
             bubbles.reverse()
             all_bubbles += bubbles
             try:
-                self.position = parse_qs(urlsplit(
-                    soup.find("link", {"rel": "prev"})["href"]
-                ).query)["before"][0]
+                self.position = parse_qs(
+                    urlsplit(soup.find("link", {"rel": "prev"})["href"]).query
+                )["before"][0]
             except (TypeError, KeyError):
                 self.position = "0"
                 break
@@ -136,14 +99,18 @@ class TGChannel:
         # Get channel meta data if they were not fetched before.
         if self.channel_title is None:
             # We can access the soup for the last page in the previous for loop.
-            self.channel_title = soup.select_one(CHANNEL_TITLE.selector).text
+            self.channel_title = soup.select_one(
+                telegram_types.CHANNEL_TITLE.selector
+            ).text
         if self.channel_description is None:
             self.channel_description = soup.select_one(
-                CHANNEL_DESCRIPTION.selector
+                telegram_types.CHANNEL_DESCRIPTION.selector
             ).text
         if self.channel_image_url is None:
             try:
-                self.channel_image_url = soup.select_one(CHANNEL_IMAGE.selector)["src"]
+                self.channel_image_url = soup.select_one(
+                    telegram_types.CHANNEL_IMAGE.selector
+                )["src"]
             except TypeError:
                 self.channel_image_url = TELEGRAM_ICON
 
@@ -151,8 +118,8 @@ class TGChannel:
         for counter_type, counter_value in [
             (type_.text, counter_value_to_int(count.text))
             for type_, count in zip(
-                soup.select(CHANNEL_COUNTERS_TYPES.selector),
-                soup.select(CHANNEL_COUNTERS_VALUES.selector),
+                soup.select(telegram_types.CHANNEL_COUNTERS_TYPES.selector),
+                soup.select(telegram_types.CHANNEL_COUNTERS_VALUES.selector),
             )
         ]:
             if counter_type in ("subscriber", "subscribers"):
@@ -172,100 +139,116 @@ class TGChannel:
             message = {}
 
             # Get message meta data.
-            number = bubble.select_one(MESSAGE_NUMBER.selector)["href"].split("/")[4]
-            owner = bubble.select_one(MESSAGE_OWNER.selector).text
-            date = bubble.select_one(MESSAGE_DATE.selector)["datetime"]
+            number = bubble.select_one(telegram_types.MESSAGE_NUMBER.selector)[
+                "href"
+            ].split("/")[4]
+            owner = bubble.select_one(telegram_types.MESSAGE_OWNER.selector).text
+            date = bubble.select_one(telegram_types.MESSAGE_DATE.selector)["datetime"]
             try:
-                author = bubble.select_one(MESSAGE_AUTHOR.selector).text
+                author = bubble.select_one(telegram_types.MESSAGE_AUTHOR.selector).text
             except AttributeError:
                 author = None
             try:
-                views = bubble.select_one(MESSAGE_VIEWS.selector).text
+                views = bubble.select_one(telegram_types.MESSAGE_VIEWS.selector).text
             except AttributeError:
                 views = None
             try:
-                votes = bubble.select_one(MESSAGE_VOTERS.selector).text
+                votes = bubble.select_one(telegram_types.MESSAGE_VOTERS.selector).text
             except AttributeError:
                 votes = None
             try:
-                forwarded_from_name = bubble.select_one(MESSAGE_FORWARDED_FROM_NAME.selector).text
+                forwarded_from_name = bubble.select_one(
+                    telegram_types.MESSAGE_FORWARDED_FROM_NAME.selector
+                ).text
             except AttributeError:
                 forwarded_from_name = None
             message.update(
                 {
-                    MESSAGE_NUMBER.name: number,
-                    MESSAGE_OWNER.name: owner,
-                    MESSAGE_AUTHOR.name: author,
-                    MESSAGE_DATE.name: date,
-                    MESSAGE_VIEWS.name: views,
-                    MESSAGE_VOTERS.name: votes,
-                    MESSAGE_FORWARDED_FROM_NAME.name: forwarded_from_name,
+                    telegram_types.MESSAGE_NUMBER.name: number,
+                    telegram_types.MESSAGE_OWNER.name: owner,
+                    telegram_types.MESSAGE_AUTHOR.name: author,
+                    telegram_types.MESSAGE_DATE.name: date,
+                    telegram_types.MESSAGE_VIEWS.name: views,
+                    telegram_types.MESSAGE_VOTERS.name: votes,
+                    telegram_types.MESSAGE_FORWARDED_FROM_NAME.name: forwarded_from_name,
                 }
             )
 
             contents = []
 
             # Get text.
-            texts = bubble.select(TEXT.selector)
+            texts = bubble.select(telegram_types.TEXT.selector)
             for text in texts:
-                contents.append({"type": TEXT.name, "content": text.text})
+                contents.append(
+                    {"type": telegram_types.TEXT.name, "content": text.text}
+                )
 
             # Get photos urls.
-            photos = bubble.select(PHOTO.selector)
+            photos = bubble.select(telegram_types.PHOTO.selector)
             for photo in photos:
                 # TODO: proxy photons and sava them as base64.
                 photo = photo["style"].split("'")[1]
-                contents.append({"type": PHOTO.name, "url": photo})
+                contents.append({"type": telegram_types.PHOTO.name, "url": photo})
 
             # Get videos urls, thumbnails and durations.
-            videos = bubble.select(VIDEO.selector)
+            videos = bubble.select(telegram_types.VIDEO.selector)
             for video in videos:
-                video_url = video.select_one(VIDEO_ELEMENT.selector)["src"]
+                video_url = video.select_one(telegram_types.VIDEO_ELEMENT.selector)[
+                    "src"
+                ]
                 # TODO: proxy video thumbnail and sava it as base64.
-                video_thumb_url = video.select_one(VIDEO_THUMB.selector)["style"].split(
-                    "'"
-                )[1]
-                video_duration = video.select_one(VIDEO_DURATION.selector).text
+                video_thumb_url = video.select_one(telegram_types.VIDEO_THUMB.selector)[
+                    "style"
+                ].split("'")[1]
+                video_duration = video.select_one(
+                    telegram_types.VIDEO_DURATION.selector
+                ).text
                 contents.append(
                     {
-                        "type": VIDEO.name,
+                        "type": telegram_types.VIDEO.name,
                         "url": video_url,
-                        VIDEO_THUMB.name: video_thumb_url,
-                        VIDEO_DURATION.name: video_duration,
+                        telegram_types.VIDEO_THUMB.name: video_thumb_url,
+                        telegram_types.VIDEO_DURATION.name: video_duration,
                     }
                 )
 
             # Get voices urls and durations.
-            voices = bubble.select(VOICE.selector)
+            voices = bubble.select(telegram_types.VOICE.selector)
             for voice in voices:
-                voice_url = voice.select_one(VOICE_URL.selector)["src"]
-                voice_duration = voice.select_one(VOICE_DURATION.selector).text
+                voice_url = voice.select_one(telegram_types.VOICE_URL.selector)["src"]
+                voice_duration = voice.select_one(
+                    telegram_types.VOICE_DURATION.selector
+                ).text
 
                 contents.append(
                     {
-                        "type": VOICE.name,
+                        "type": telegram_types.VOICE.name,
                         "url": voice_url,
-                        VOICE_DURATION.name: voice_duration,
+                        telegram_types.VOICE_DURATION.name: voice_duration,
                     }
                 )
 
             # Get documents urls and sizes.
-            documents = bubble.select(DOCUMENT.selector)
+            documents = bubble.select(telegram_types.DOCUMENT.selector)
             for document in documents:
                 document_url = document["href"]
-                document_title = document.select_one(DOCUMENT_TITLE.selector).text
-                document_size = document.select_one(DOCUMENT_SIZE.selector).text
+                document_title = document.select_one(
+                    telegram_types.DOCUMENT_TITLE.selector
+                ).text
+                document_size = document.select_one(
+                    telegram_types.DOCUMENT_SIZE.selector
+                ).text
                 contents.append(
                     {
-                        "type": DOCUMENT.name,
+                        "type": telegram_types.DOCUMENT.name,
                         "url": document_url,
-                        DOCUMENT_TITLE.name: document_title,
-                        DOCUMENT_SIZE.name: document_size,
+                        telegram_types.DOCUMENT_TITLE.name: document_title,
+                        telegram_types.DOCUMENT_SIZE.name: document_size,
                     }
                 )
 
             # Get locations.
-            locations = bubble.select(LOCATION.selector)
+            locations = bubble.select(telegram_types.LOCATION.selector)
             for location in locations:
                 url = location["href"]
                 # Convert URL from google maps to openstreet map and get longuitude and latitude.
@@ -279,54 +262,58 @@ class TGChannel:
                 )
                 contents.append(
                     {
-                        "type": LOCATION.name,
+                        "type": telegram_types.LOCATION.name,
                         "url": url,
-                        LOCATION_LATITUDE.name: latitude,
-                        LOCATION_LONGITUDE.name: longitude,
+                        telegram_types.LOCATION_LATITUDE.name: latitude,
+                        telegram_types.LOCATION_LONGITUDE.name: longitude,
                     }
                 )
 
             # Get polls.
-            polls = bubble.select(POLL.selector)
+            polls = bubble.select(telegram_types.POLL.selector)
             for poll in polls:
-                poll_question = poll.select_one(POLL_QUESTION.selector).text
-                poll_type = poll.select_one(POLL_TYPE.selector).text
+                poll_question = poll.select_one(
+                    telegram_types.POLL_QUESTION.selector
+                ).text
+                poll_type = poll.select_one(telegram_types.POLL_TYPE.selector).text
 
                 poll_options = []
 
-                options = poll.select(POLL_OPTIONS.selector)
+                options = poll.select(telegram_types.POLL_OPTIONS.selector)
                 for option in options:
                     option_percent = option.select_one(
-                        POLL_OPTION_PERCENT.selector
+                        telegram_types.POLL_OPTION_PERCENT.selector
                     ).text
-                    option_value = option.select_one(POLL_OPTION_VALUE.selector).text
+                    option_value = option.select_one(
+                        telegram_types.POLL_OPTION_VALUE.selector
+                    ).text
                     poll_options.append(
                         {
-                            POLL_OPTION_PERCENT.name: option_percent,
-                            POLL_OPTION_VALUE.name: option_value,
+                            telegram_types.POLL_OPTION_PERCENT.name: option_percent,
+                            telegram_types.POLL_OPTION_VALUE.name: option_value,
                         }
                     )
 
                 contents.append(
                     {
-                        "type": POLL.name,
-                        POLL_QUESTION.name: poll_question,
-                        POLL_TYPE.name: poll_type,
-                        POLL_OPTIONS.name: poll_options,
+                        "type": telegram_types.POLL.name,
+                        telegram_types.POLL_QUESTION.name: poll_question,
+                        telegram_types.POLL_TYPE.name: poll_type,
+                        telegram_types.POLL_OPTIONS.name: poll_options,
                     }
                 )
 
             # Get stickers
-            stickers = bubble.select(STICKER.selector)
+            stickers = bubble.select(telegram_types.STICKER.selector)
             for sticker in stickers:
                 sticker_shape = sticker["style"].split("'")[1]  # base64 svg image
                 # TODO: proxy image
                 sticker_image = sticker["data-webp"]
                 contents.append(
                     {
-                        "type": STICKER.name,
-                        STICKER_SHAPE.name: sticker_shape,
-                        STICKER_IMAGE.name: sticker_image,
+                        "type": telegram_types.STICKER.name,
+                        telegram_types.STICKER_SHAPE.name: sticker_shape,
+                        telegram_types.STICKER_IMAGE.name: sticker_image,
                     }
                 )
 
@@ -337,15 +324,19 @@ class TGChannel:
             #     pass
 
             # TODO: Improve selector since it work with normal stickers also.
-            unsupported_medias = bubble.select(UNSUPPORTED_MEDIA.selector)
+            unsupported_medias = bubble.select(
+                telegram_types.UNSUPPORTED_MEDIA.selector
+            )
             for media in unsupported_medias:
                 try:
-                    url = media.select_one(UNSUPPORTED_MEDIA_URL.selector)["href"]
+                    url = media.select_one(
+                        telegram_types.UNSUPPORTED_MEDIA_URL.selector
+                    )["href"]
                 except KeyError:
                     continue
                 contents.append(
                     {
-                        "type": UNSUPPORTED_MEDIA.name,
+                        "type": telegram_types.UNSUPPORTED_MEDIA.name,
                         "url": url,
                     }
                 )
@@ -354,7 +345,7 @@ class TGChannel:
             all_messages.append(message)
         return tuple(all_messages)
 
-    def fetch_to_rss(self, pages_to_fetch: int = 1, pretty: bool = False):
+    def fetch_to_rss(self, pages_to_fetch: int = 1, pretty: bool = False) -> str:
         """Fetch channel to python then convert them to rss feed."""
         messages = self.fetch_to_python(pages_to_fetch)
         return conversions.python_to_feed_generator(
@@ -365,6 +356,7 @@ class TGChannel:
             messages,
         ).rss_str(pretty=pretty)
 
+    # TODO: Enable atom feed.
     # def fetch_to_atom(self, pages_to_fetch: int = 1):
     #     """Fetch channel to python then convert them to atom feed."""
     #     messages = self.fetch_to_python(pages_to_fetch)

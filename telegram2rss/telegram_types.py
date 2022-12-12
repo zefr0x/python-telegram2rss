@@ -1,6 +1,6 @@
 """Telegram data types and how to scrape them."""
-from typing import Optional
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass

@@ -1,15 +1,12 @@
 """Conversions from python."""
-from functools import cache
 from typing import Optional
 
 from feedgen.feed import FeedGenerator
 
 from . import telegram_types
-from .__about__ import (
-    __name__ as pkg_name,
-    __version__ as pkg_version,
-    __url__ as pkg_url,
-)
+from .__about__ import __name__ as pkg_name
+from .__about__ import __url__ as pkg_url
+from .__about__ import __version__ as pkg_version
 
 
 TELEGRAM_URL = "https://t.me"
@@ -21,7 +18,7 @@ def python_to_feed_generator(
     channel_description: Optional[str],
     channel_image_url: Optional[str],
     messages: tuple,
-):
+) -> FeedGenerator:
     """From python to rss."""
     fg = FeedGenerator()
     fg.title(channel_title or channel_id)
