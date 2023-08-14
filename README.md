@@ -12,7 +12,7 @@ A python library to fetch data from public Telegram channels to use them as a py
 
 ### From the git repo
 ```shell
-git clone https://github.com/zer0-x/python-telegram2rss.git
+git clone https://github.com/zefr0x/python-telegram2rss.git
 
 cd python-telegram2rss
 
