@@ -64,7 +64,7 @@ s.proxies = {'http': "socks5://127.0.0.1:9050",
 channel = telegram2rss.TGChannel(channel_id, session_object=s)
 ```
 
-> **Warning**
+> [!Warning]
 > Images will be included as links, so they will not be proxied unless you are using a proxy in your RSS reader.
 > Anyway there is a plan to implement a way to download them and included them as bash64 rather then links.
 
