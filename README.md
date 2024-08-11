@@ -1,3 +1,9 @@
+> [!Warning]
+> This project is no longer maintained and some tests are failing. If you are interested, it's free software under the AGPL-3.0 license.
+>
+> P.S. I have a news aggregation system project currently under the planning stage, and something like `telegram2rss` might be part of it.
+
+
 # telegram2rss
 
 [![Downloads count all](https://static.pepy.tech/personalized-badge/telegram2rss?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads)](https://pepy.tech/project/telegram2rss)
